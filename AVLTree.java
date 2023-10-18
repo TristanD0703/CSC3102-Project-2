@@ -213,35 +213,100 @@ public class AVLTree<E extends Comparable<E>> implements AVLTreeAPI<E>
    public void preorderTraverse(Function func)
    {
       //Implement this method
+      preorderTraverse(root, func);
    }
    @Override
    public void postorderTraverse(Function func)
    {
       //Implement this method
+      postorderTraverse(root, func);
    }
    @Override
    public ArrayList<E> getChildren(E entry) throws AVLTreeException
    {
       //Implement this method
-      return null;
+      Node tmp = root;
+      int comparisonResult = cmp.compare(entry, tmp.data);
+      while(comparisonResult != 0){
+         if(comparisonResult > 0){
+            tmp = tmp.right;
+         }
+         if(comparisonResult < 0){
+            tmp = tmp.left;
+         }
+         if(tmp == null){
+            throw new AVLTreeException("AVL Tree Exception: key not in tree call to getChildren()");
+         }
+         comparisonResult = cmp.compare(entry, tmp.data);
+      }
+      ArrayList<E> ret = new ArrayList<E>();
+      ret.add(tmp.left.data);
+      ret.add(tmp.right.data);
+      return ret;
    }
    
    public E getParent(E entry) throws AVLTreeException
    {
       //Implement this method
-      return null;
+      Node tmp = root;
+      Node parent = null;
+      int comparisonResult = cmp.compare(entry, tmp.data);
+      while(comparisonResult != 0){
+         if(comparisonResult > 0){
+            parent = tmp;
+            tmp = tmp.right;
+         }
+         if(comparisonResult < 0){
+            parent = tmp;
+            tmp = tmp.left;
+         }
+         if(tmp == null){
+            throw new AVLTreeException("AVL Tree Exception: key not in tree call to getParent()");
+         }
+         comparisonResult = cmp.compare(entry, tmp.data);
+      }
+      return parent.data;
    }
    
    public int ancestors(E entry) throws AVLTreeException
    {
-      //Implement this method
-      return -1;
+      Node tmp = root;
+      int ances = 0;
+      int comparisonResult = cmp.compare(entry, tmp.data);
+      while(comparisonResult != 0){
+         ances++;
+         if(comparisonResult > 0){
+            tmp = tmp.right;
+         }
+         if(comparisonResult < 0){
+            tmp = tmp.left;
+         }
+         if(tmp == null){
+            throw new AVLTreeException("AVL Tree Exception: key not in tree call to ancestors()");
+         }
+         comparisonResult = cmp.compare(entry, tmp.data);
+      }
+      return ances;
    }
 
    public int descendants(E entry) throws AVLTreeException
    {
       //Implement this method
-      return -1;
+      Node tmp = root;
+      int comparisonResult = cmp.compare(entry, tmp.data);
+      while(comparisonResult != 0){
+         if(comparisonResult > 0){
+            tmp = tmp.right;
+         }
+         if(comparisonResult < 0){
+            tmp = tmp.left;
+         }
+         if(tmp == null){
+            throw new AVLTreeException("AVL Tree Exception: key not in tree call to descendants()");
+         }
+         comparisonResult = cmp.compare(entry, tmp.data);
+      }
+      return countDesc(tmp);
    }
    
    @Override
@@ -700,6 +765,12 @@ public class AVLTree<E extends Comparable<E>> implements AVLTreeAPI<E>
     private void preorderTraverse(Node node, Function func)
     {
        //Implement this method
+       if (node != null)
+      {
+         func.apply(node.data);
+         preorderTraverse(node.left, func);
+         preorderTraverse(node.right,func);
+      }
     }
 
     /**
@@ -711,6 +782,12 @@ public class AVLTree<E extends Comparable<E>> implements AVLTreeAPI<E>
     private void postorderTraverse(Node node, Function func)
     {
        //Implement this method
+       if (node != null)
+      {
+         preorderTraverse(node.left, func);
+         preorderTraverse(node.right,func);
+         func.apply(node.data);
+      }
     }
 
     /**
@@ -721,7 +798,15 @@ public class AVLTree<E extends Comparable<E>> implements AVLTreeAPI<E>
     private int countDesc(Node node)
     {
        //Implement this method
-       return 0;
+       if(node.left != null && node.right != null){
+         return 2 + countDesc(node.left) + countDesc(node.right);
+       } else if(node.left != null){
+         return 1 + countDesc(node.left);
+       } else if(node.right != null){
+         return 1 + countDesc(node.right);
+       } else{
+         return 1;
+      }
     }
 
     /**
@@ -732,7 +817,15 @@ public class AVLTree<E extends Comparable<E>> implements AVLTreeAPI<E>
     private int height(Node node)
     {
        //Implement this method
-       return -1;
+       if(node == null){
+         return - 1;
+       } else if(node.left != null ){
+         return 1 + height(node.left);
+       } else if (node.right != null){
+         return 1 + height(node.right);
+       } else {
+         return 1;
+       }
     }
    
     /**
