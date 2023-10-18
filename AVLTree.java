@@ -270,6 +270,7 @@ public class AVLTree<E extends Comparable<E>> implements AVLTreeAPI<E>
    
    public int ancestors(E entry) throws AVLTreeException
    {
+      //Implement this method
       Node tmp = root;
       int ances = 0;
       int comparisonResult = cmp.compare(entry, tmp.data);
@@ -319,14 +320,16 @@ public class AVLTree<E extends Comparable<E>> implements AVLTreeAPI<E>
    public int diameter()
    {
       //Implement this method
-      return 0;
+      if(root == null)
+         return 0;
+      return 3 + height(root.left) + height(root.right);
    }
    
    @Override
    public boolean isFibonacci()
    {
       //implement this method
-      return false;
+      return size() == fibonacci(height() + 3) - 1;
    }      
    
    @Override
@@ -818,8 +821,8 @@ public class AVLTree<E extends Comparable<E>> implements AVLTreeAPI<E>
     {
        //Implement this method
        if(node == null){
-         return - 1;
-       } else if(node.left != null ){
+         return -1;
+       } else if(node.left != null){
          return 1 + height(node.left);
        } else if (node.right != null){
          return 1 + height(node.right);
@@ -837,7 +840,17 @@ public class AVLTree<E extends Comparable<E>> implements AVLTreeAPI<E>
     private int fibonacci(int n)
     {
        //Implement this method
-       return -1;
+       if(n < 1)
+         return -1;
+      int old = 1;
+      int previous = 1;
+      int current = 0;
+       for(int i = 3; i <= n; i++){
+         current = old + previous;
+         old = previous;
+         previous = current;
+       }
+       return current;
     }     
     
     /**
@@ -850,6 +863,9 @@ public class AVLTree<E extends Comparable<E>> implements AVLTreeAPI<E>
     private boolean isComplete(Node node, int index)
     {
        //Implement this method
+       if(node.left == null || node.right == null){
+
+       }
        return false;
     }
 /* END: Augmented Private Auxiliary Methods */      
