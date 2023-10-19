@@ -61,8 +61,8 @@ public class Dendrologist
             case 0:
                 cmp = (current, other) -> {
                     if(current.length() != other.length())
-                        return -1 * (current.length() - other.length());
-                    return current.compareTo(other);
+                        return (current.length() - other.length());
+                    return -1 * current.compareTo(other);
                 };
                 break;
             default: System.out.println(usage);
