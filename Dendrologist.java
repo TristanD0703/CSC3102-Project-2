@@ -46,16 +46,23 @@ public class Dendrologist
             case -2: cmp = (current, other) -> -1 * (current.length() - other.length()); break;
             case 3: 
                 cmp = (current, other) -> {
-                    if(current.length() == other.length())
+                    if(current.length() != other.length())
                         return current.length() - other.length();
                     return current.compareTo(other);
                 };
                 break;
             case -3: 
                 cmp = (current, other) -> {
-                    if(current.length() == other.length())
+                    if(current.length() != other.length())
                         return -1 * (current.length() - other.length());
                     return -1 * current.compareTo(other);
+                };
+                break;
+            case 0:
+                cmp = (current, other) -> {
+                    if(current.length() != other.length())
+                        return -1 * (current.length() - other.length());
+                    return current.compareTo(other);
                 };
                 break;
             default: System.out.println(usage);
@@ -65,26 +72,93 @@ public class Dendrologist
         AVLTree<String> tree = new AVLTree<String>(cmp);
         Scanner input = new Scanner(new File(args[1]));
         while(input.hasNextLine()){
-            String[] commands = input.nextLine().split(" ");
+            String originalMessage = input.nextLine();
+            String[] commands = originalMessage.split(" ");
+            /*for(int i = 0; i < commands.length; i++){
+                System.out.println(commands[i]);
+            }*/
 
             if(commands[0].toLowerCase().equals("insert")){
                 if(commands.length >= 2){
                     tree.insert(commands[1]);
-                    System.out.println("Inserted " + commands[1]);
+                    System.out.println("Inserted: " + commands[1]);
                 }
                 else {
-                    throw new IllegalArgumentException("parsing error");
+                    System.out.println("Parsed commands ");
+                    for(int i = 0; i < commands.length; i++)
+                        System.out.println(commands[i]);
+                    throw new IllegalArgumentException("parsing error: " + originalMessage);
                 }
-            } else if(commands[0].toLowerCase().equals("remove")){
+            } else if(commands[0].toLowerCase().equals("delete")){
                 if(commands.length >= 2){
                     tree.remove(commands[1]);
-                    System.out.println("Removed " + commands[1]);
+                    System.out.println("Removed: " + commands[1]);
                 }
                 else {
-                    throw new IllegalArgumentException("parsing error");
+                    System.out.println("Parsed commands ");
+                    for(int i = 0; i < commands.length; i++)
+                        System.out.println(commands[i]);
+                    throw new IllegalArgumentException("parsing error: " + originalMessage);
                 }
+            } else if(commands[0].toLowerCase().equals("traverse")){
+                System.out.println("pre-Order Traversal:");
+                tree.preorderTraverse((node) -> {
+                    System.out.println(node);
+                    return node.toString();
+                });
+
+                System.out.println("In-Order Traversal:");
+                tree.traverse((node) -> {
+                    System.out.println(node);
+                    return node.toString();
+                });
+
+                System.out.println("post-Order Traversal:");
+                tree.postorderTraverse((node) -> {
+                    System.out.println(node);
+                    return node.toString();
+                });
             } else if(commands[0].toLowerCase().equals("props")){
-                tree.postorderTraverse((node) -> System.out.println(node.data));
+                System.out.println("Properties: ");
+                System.out.println("size = " + tree.size() + ", height = " + tree.height() + ", diameter = " + tree.diameter());
+                System.out.println("fibonacci? = " + tree.isFibonacci() + ", complete? = " + tree.isComplete());
+            } else if(commands[0].toLowerCase().equals("gen")){
+                if(commands.length >= 2){
+                    System.out.print("Geneology: " + commands[1]);
+                    if(!tree.inTree(commands[1])){
+                        System.out.println(" UNDEFINED");
+                    } else {
+                        System.out.println();
+                        ArrayList<String> children = tree.getChildren(commands[1]);
+                        System.out.print("parent = " + tree.getParent(commands[1]) + ", left-child = " );
+                        if(children.get(0) != null)
+                            System.out.print(children.get(0)); 
+                        else
+                            System.out.print("NONE");
+
+                        System.out.print(", right-child = ");
+                        if(children.get(1) != null)
+                            System.out.println(children.get(1)); 
+                        else
+                            System.out.println("NONE"); 
+                        System.out.println("#ancestors = " + tree.ancestors(commands[1]) + ", #descendants = " + tree.descendants(commands[1]));     
+                    }         
+                }
+                else {
+                    System.out.println("Parsed commands ");
+                    for(int i = 0; i < commands.length; i++)
+                        System.out.println(commands[i]);
+                    System.out.println("Parsed commands ");
+                    for(int i = 0; i < commands.length; i++)
+                        System.out.println(commands[i]);
+                    throw new IllegalArgumentException("parsing error: " + originalMessage);
+
+                }
+            } else {
+                System.out.println("Parsed commands ");
+                    for(int i = 0; i < commands.length; i++)
+                        System.out.println(commands[i]);
+                    throw new IllegalArgumentException("parsing error: " + originalMessage);
             }
 
         }
@@ -95,5 +169,7 @@ public class Dendrologist
 
 
 
-    }   
+    }
+    
+    
 }

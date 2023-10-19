@@ -240,8 +240,14 @@ public class AVLTree<E extends Comparable<E>> implements AVLTreeAPI<E>
          comparisonResult = cmp.compare(entry, tmp.data);
       }
       ArrayList<E> ret = new ArrayList<E>();
-      ret.add(tmp.left.data);
-      ret.add(tmp.right.data);
+      if(tmp.left != null)
+         ret.add(tmp.left.data);
+      else
+         ret.add(null);
+      if(tmp.right != null)
+         ret.add(tmp.right.data);
+      else
+         ret.add(null);
       return ret;
    }
    
@@ -329,7 +335,7 @@ public class AVLTree<E extends Comparable<E>> implements AVLTreeAPI<E>
    public boolean isFibonacci()
    {
       //implement this method
-      return size() == fibonacci(height() + 3) - 1;
+      return (size() == fibonacci(height() + 3) - 1);// && (root.bal != BalancedFactor.RH || root == null);
    }      
    
    @Override
@@ -787,8 +793,8 @@ public class AVLTree<E extends Comparable<E>> implements AVLTreeAPI<E>
        //Implement this method
        if (node != null)
       {
-         preorderTraverse(node.left, func);
-         preorderTraverse(node.right,func);
+         postorderTraverse(node.left, func);
+         postorderTraverse(node.right, func);
          func.apply(node.data);
       }
     }
@@ -808,7 +814,7 @@ public class AVLTree<E extends Comparable<E>> implements AVLTreeAPI<E>
        } else if(node.right != null){
          return 1 + countDesc(node.right);
        } else{
-         return 1;
+         return 0;
       }
     }
 
@@ -822,13 +828,17 @@ public class AVLTree<E extends Comparable<E>> implements AVLTreeAPI<E>
        //Implement this method
        if(node == null){
          return -1;
-       } else if(node.left != null){
-         return 1 + height(node.left);
-       } else if (node.right != null){
-         return 1 + height(node.right);
-       } else {
-         return 1;
        }
+       if(node.left != null && node.right != null)
+         return 1 + Math.max(height(node.left), height(node.right));
+       if(node.left != null){
+         return 1 + height(node.left);
+       } 
+       if (node.right != null){
+         return 1 + height(node.right);
+       } 
+      return 0;
+       
     }
    
     /**
@@ -842,6 +852,8 @@ public class AVLTree<E extends Comparable<E>> implements AVLTreeAPI<E>
        //Implement this method
        if(n < 1)
          return -1;
+      if(n == 1 || n == 2)
+         return 1;
       int old = 1;
       int previous = 1;
       int current = 0;
@@ -863,10 +875,18 @@ public class AVLTree<E extends Comparable<E>> implements AVLTreeAPI<E>
     private boolean isComplete(Node node, int index)
     {
        //Implement this method
-       if(node.left == null || node.right == null){
-
+       int treeHeight = height();
+       if(index == treeHeight || node == null){
+         return true;
+       }
+       if(node.left != null && node.right != null){
+         return isComplete(node.left, index + 1) && isComplete(node.right, index + 1);
+       } else if(node.left != null){
+         return isComplete(node.left, index + 1);
        }
        return false;
+      
+
     }
 /* END: Augmented Private Auxiliary Methods */      
 }
